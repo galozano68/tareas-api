@@ -1,0 +1,90 @@
+
+openapi: 3.1.0
+info:
+  title: Tareas API
+  version: "1.0.0"
+servers:
+  - url: https://3a4a0f14-834f-4c08-be95-119a8358c231-00-20ngx9oirlgse.picard.replit.dev
+paths:
+  /tareas:
+    get:
+      summary: Listar Tareas
+      operationId: listarTareas
+      parameters:
+        - name: estado
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de tareas
+    post:
+      summary: Crear Tarea
+      operationId: crearTarea
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TareaIn"
+      responses:
+        '200':
+          description: Tarea creada
+  /tareas/{tarea_id}:
+    patch:
+      summary: Actualizar Campo Tarea
+      operationId: actualizarTarea
+      parameters:
+        - name: tarea_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTareaModel"
+      responses:
+        '200':
+          description: Tarea actualizada
+    delete:
+      summary: Eliminar Tarea
+      operationId: eliminarTarea
+      parameters:
+        - name: tarea_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tarea eliminada correctamente
+components:
+  schemas:
+    TareaIn:
+      type: object
+      required: [descripcion]
+      properties:
+        descripcion:
+          type: string
+        responsable:
+          type: string
+          nullable: true
+        vencimiento:
+          type: string
+          format: date
+          nullable: true
+        estado:
+          type: string
+          default: pendiente
+          nullable: true
+    UpdateTareaModel:
+      type: object
+      required: [updates]
+      properties:
+        updates:
+          type: object
+          additionalProperties: true
