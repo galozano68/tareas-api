@@ -1,18 +1,27 @@
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date
+from datetime import datetime
 from pymongo import MongoClient
-from bson.objectid import ObjectId
+from bson import ObjectId
 
-app = FastAPI()
+# app = FastAPI()
+
+app = FastAPI(
+    title="Tareas API",
+    version="1.0.0",
+    servers=[{
+        "url":
+        "https://3a4a0f14-834f-4c08-be95-119a8358c231-00-20ngx9oirlgse.picard.replit.dev"
+    }])
 
 # Conexión a MongoDB Atlas
-MONGO_URI = "mongodb+srv://gptuser:<db_password>@tareas-gpt.rv6obcy.mongodb.net/?retryWrites=true&w=majority&appName=tareas-gpt"
+MONGO_URI = "mongodb+srv://gptuser:Guratinian0@tareas-gpt.rv6obcy.mongodb.net/?retryWrites=true&w=majority&appName=tareas-gpt"
 client = MongoClient(MONGO_URI)
 db = client["tareasdb"]
 tareas_collection = db["tareas"]
+
 
 # Modelos de entrada y salida
 class TareaIn(BaseModel):
@@ -21,16 +30,25 @@ class TareaIn(BaseModel):
     vencimiento: Optional[date] = None
     estado: Optional[str] = "pendiente"
 
+
 class TareaOut(TareaIn):
     id: str
+
 
 # Crear una nueva tarea
 @app.post("/tareas", response_model=TareaOut)
 def crear_tarea(tarea: TareaIn):
+    # antes de insertar en la base de datos:
+    if isinstance(tarea.vencimiento,
+                  date):  # opcionalmente importa `date` de datetime
+        tarea.vencimiento = datetime.combine(tarea.vencimiento,
+                                             datetime.min.time())
+
     tarea_dict = tarea.dict()
     result = tareas_collection.insert_one(tarea_dict)
     tarea_out = {**tarea_dict, "id": str(result.inserted_id)}
     return tarea_out
+
 
 # Listar tareas
 @app.get("/tareas", response_model=List[TareaOut])
@@ -45,14 +63,15 @@ def listar_tareas(estado: Optional[str] = None):
         tareas.append(t)
     return tareas
 
+
 # Cambiar estado de una tarea
 @app.patch("/tareas/{tarea_id}", response_model=TareaOut)
 def actualizar_estado(tarea_id: str, nuevo_estado: str):
     result = tareas_collection.find_one_and_update(
-        {"_id": ObjectId(tarea_id)},
-        {"$set": {"estado": nuevo_estado}},
-        return_document=True
-    )
+        {"_id": ObjectId(tarea_id)}, {"$set": {
+            "estado": nuevo_estado
+        }},
+        return_document=True)
     if result is None:
         raise HTTPException(status_code=404, detail="Tarea no encontrada")
     result["id"] = str(result["_id"])
