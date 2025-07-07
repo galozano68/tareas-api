@@ -11,8 +11,7 @@ from bson import ObjectId
 app = FastAPI(
     title="Tareas API",
     version="1.0.0",
-    servers=[{
-        "url": "https://tareas-api.onrender.com"
+    # sin servers - se configurará dinámicamente
     }])
 
 # Conexión a MongoDB Atlas
@@ -33,7 +32,10 @@ class TareaIn(BaseModel):
 class TareaOut(TareaIn):
     id: str
 
-
+@app.get("/")
+def root():
+    return {"message": "Tareas API está funcionando"}
+    
 # Crear una nueva tarea
 @app.post("/tareas", response_model=TareaOut)
 def crear_tarea(tarea: TareaIn):
