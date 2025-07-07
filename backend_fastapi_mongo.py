@@ -12,8 +12,7 @@ app = FastAPI(
     title="Tareas API",
     version="1.0.0",
     servers=[{
-        "url":
-        "https://3a4a0f14-834f-4c08-be95-119a8358c231-00-20ngx9oirlgse.picard.replit.dev"
+        "url": "https://tareas-api.onrender.com"
     }])
 
 # Conexión a MongoDB Atlas
