@@ -10,9 +10,9 @@ from bson import ObjectId
 
 app = FastAPI(
     title="Tareas API",
-    version="1.0.0",
-    # sin servers - se configurará dinámicamente
-    }])
+    version="1.0.0"
+    # Sin servers - se configurará automáticamente
+)
 
 # Conexión a MongoDB Atlas
 MONGO_URI = "mongodb+srv://gptuser:Guratinian0@tareas-gpt.rv6obcy.mongodb.net/?retryWrites=true&w=majority&appName=tareas-gpt"
