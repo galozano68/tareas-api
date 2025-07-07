@@ -63,16 +63,25 @@ def listar_tareas(estado: Optional[str] = None):
     return tareas
 
 
-# Cambiar estado de una tarea
-@app.patch("/tareas/{tarea_id}", response_model=TareaOut)
-def actualizar_estado(tarea_id: str, nuevo_estado: str):
-    result = tareas_collection.find_one_and_update(
-        {"_id": ObjectId(tarea_id)}, {"$set": {
-            "estado": nuevo_estado
-        }},
-        return_document=True)
-    if result is None:
+class UpdateTareaModel(BaseModel):
+    updates: Dict[str, Any]
+
+
+@app.patch("/tareas/{tarea_id}")
+def actualizar_campo_tarea(tarea_id: str, updates: dict = Body(...)):
+    result = tareas_collection.find_one_and_update({"_id": ObjectId(tarea_id)},
+                                                   {"$set": updates},
+                                                   return_document=True)
+    if not result:
         raise HTTPException(status_code=404, detail="Tarea no encontrada")
     result["id"] = str(result["_id"])
     del result["_id"]
     return result
+
+
+@app.delete("/tareas/{tarea_id}")
+def eliminar_tarea(tarea_id: str):
+    result = tareas_collection.delete_one({"_id": ObjectId(tarea_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tarea no encontrada")
+    return {"message": "Tarea eliminada correctamente"}
