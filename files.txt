@@ -1,0 +1,14 @@
+ El volumen de la unidad C no tiene etiqueta.
+ El n£mero de serie del volumen es: DEFB-D42E
+
+ Directorio de C:\repositorios\python_projects\tareas-api
+
+07/07/2025  21:51    <DIR>          .
+05/07/2025  20:28    <DIR>          ..
+07/07/2025  21:47             2.704 backend_fastapi_mongo.py
+07/07/2025  21:51                 0 files.txt
+07/07/2025  17:32                41 main.py
+07/07/2025  21:37                51 requirements.txt
+07/07/2025  18:31             2.436 tareas-api.yaml
+               5 archivos          5.232 bytes
+               2 dirs  278.383.165.440 bytes libres
