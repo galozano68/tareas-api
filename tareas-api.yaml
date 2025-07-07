@@ -1,0 +1,160 @@
+openapi: 3.1.0
+info:
+  title: Tareas API
+  version: 1.0.0
+  description: API para gestión de tareas con MongoDB
+
+servers:
+  - url: https://tareas-api.onrender.com
+
+paths:
+  /tareas:
+    get:
+      operationId: listar_tareas
+      summary: Listar tareas
+      parameters:
+        - name: estado
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pendiente, en_progreso, completada, cancelada]
+      responses:
+        '200':
+          description: Lista de tareas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TareaOut'
+    
+    post:
+      operationId: crear_tarea
+      summary: Crear nueva tarea
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TareaIn'
+      responses:
+        '200':
+          description: Tarea creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TareaOut'
+
+  /tareas/{tarea_id}:
+    patch:
+      operationId: actualizar_campo_tarea
+      summary: Actualizar campos de una tarea
+      parameters:
+        - name: tarea_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                descripcion:
+                  type: string
+                responsable:
+                  type: string
+                vencimiento:
+                  type: string
+                  format: date
+                estado:
+                  type: string
+                  enum: [pendiente, en_progreso, completada, cancelada]
+      responses:
+        '200':
+          description: Tarea actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TareaOut'
+        '404':
+          description: Tarea no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+    
+    delete:
+      operationId: eliminar_tarea
+      summary: Eliminar una tarea
+      parameters:
+        - name: tarea_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tarea eliminada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Tarea no encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+
+components:
+  schemas:
+    TareaIn:
+      type: object
+      required:
+        - descripcion
+      properties:
+        descripcion:
+          type: string
+        responsable:
+          type: string
+          nullable: true
+        vencimiento:
+          type: string
+          format: date
+          nullable: true
+        estado:
+          type: string
+          enum: [pendiente, en_progreso, completada, cancelada]
+          default: pendiente
+    
+    TareaOut:
+      type: object
+      properties:
+        id:
+          type: string
+        descripcion:
+          type: string
+        responsable:
+          type: string
+          nullable: true
+        vencimiento:
+          type: string
+          format: date
+          nullable: true
+        estado:
+          type: string
+          enum: [pendiente, en_progreso, completada, cancelada]
